@@ -69,3 +69,29 @@ export const login = async (req, res) => {
     handleError(error, `Login Controller Error: ${error.message}`);
   }
 };
+
+export const logout = (req, res) => {
+  try {
+    const token = req.cookies.jwtToken;
+
+    if (!token) {
+      return res.json({
+        success: false,
+        message: "Something went wrong",
+      });
+    }
+
+    res.clearCookie(token, {
+      path: "/",
+      httpOnly: true,
+      maxAge: 1000 * 24 * 60 * 60,
+    });
+
+    res.json({
+      success: true,
+      message: "Logout Successfully",
+    });
+  } catch (error) {
+    handleError(error, `Logout controller Error: ${error.message}`);
+  }
+};
