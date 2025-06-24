@@ -1,5 +1,9 @@
 import { checkUser, saveUser } from "../services/authService.js";
-import { handleError } from "../utils/util.js";
+import {
+  comparingPassword,
+  handleError,
+  setTokenCookie,
+} from "../utils/util.js";
 
 export const register = async (req, res) => {
   const { username, password } = req.body;
@@ -16,9 +20,10 @@ export const register = async (req, res) => {
     const user = await saveUser(username, password);
 
     if (user) {
+      setTokenCookie(res, user);
       return res.json({
         success: true,
-        message: "working",
+        message: "created",
       });
     }
 
@@ -28,5 +33,39 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     handleError(error, `Auth Register Error: ${error.message}`);
+  }
+};
+
+export const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const userExist = await checkUser(username);
+
+    if (!userExist) {
+      return res.json({
+        success: false,
+        message: "Your Credential is wrong",
+      });
+    }
+
+    const isPasswordMatch = await comparingPassword(
+      password,
+      userExist.password
+    );
+
+    if (!isPasswordMatch) {
+      return res.json({
+        success: false,
+        message: "Your Credential is wrong",
+      });
+    }
+
+    setTokenCookie(res, userExist);
+    res.json({
+      success: true,
+      message: "You are Logged in successfully",
+    });
+  } catch (error) {
+    handleError(error, `Login Controller Error: ${error.message}`);
   }
 };

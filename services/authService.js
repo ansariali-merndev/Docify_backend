@@ -12,7 +12,7 @@ export const saveUser = async (username, password) => {
     });
 
     await user.save();
-    return true;
+    return user;
   } catch (error) {
     handleError(error, `SaveUser error services: ${error.message}`);
   }
