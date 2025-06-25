@@ -1,4 +1,5 @@
 import { checkUser, saveUser } from "../services/authService.js";
+import { verifyToken } from "../utils/jwt.js";
 import {
   comparingPassword,
   handleError,
@@ -81,7 +82,7 @@ export const logout = (req, res) => {
       });
     }
 
-    res.clearCookie(token, {
+    res.clearCookie("jwtToken", {
       path: "/",
       httpOnly: true,
       maxAge: 1000 * 24 * 60 * 60,
@@ -93,5 +94,35 @@ export const logout = (req, res) => {
     });
   } catch (error) {
     handleError(error, `Logout controller Error: ${error.message}`);
+  }
+};
+
+export const verify = async (req, res) => {
+  try {
+    const token = req.cookies.jwtToken;
+    if (!token) {
+      return res.json({
+        success: false,
+        message: "unAuthorized",
+      });
+    }
+
+    const decodedToken = verifyToken(token);
+
+    const user = await checkUser(decodedToken.username);
+
+    if (decodedToken.id !== user.id) {
+      return res.json({
+        success: false,
+        message: "unAuthorized",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "authorized",
+    });
+  } catch (error) {
+    handleError(error, `Auth Verify error : ${error.message}`);
   }
 };

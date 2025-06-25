@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { login, logout, register } from "../controller/authContoller.js";
+import {
+  login,
+  logout,
+  register,
+  verify,
+} from "../controller/authContoller.js";
 
 export const router = Router();
 
@@ -12,3 +17,4 @@ router.get("/", (req, res) => {
 router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
+router.get("/verify", verify);
