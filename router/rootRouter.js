@@ -21,7 +21,7 @@ rootRouter.post("/summary", upload.single("pdf"), async (req, res) => {
     const data = await pdf(fileBuffer);
     const chat = await cohere.chat({
       model: "command",
-      message: `Summarize the following PDF content in simple English using bullet points. Limit the summary to a maximum of 10 bullet points only:\n\n${data.text}`,
+      message: `Summarize the following PDF content in simple English using bullet points. Limit the summary to a maximum of 5 bullet points only:\n\n${data.text}`,
     });
 
     res.json({
