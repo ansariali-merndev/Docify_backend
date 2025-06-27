@@ -4,6 +4,7 @@ import { router } from "./router/authRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { configDotenv } from "dotenv";
+import { rootRouter } from "./router/rootRouter.js";
 
 configDotenv();
 const app = express();
@@ -19,11 +20,17 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/auth", router);
+app.use("/root", rootRouter);
 
-app.get("/", (req, res) => {
-  res.json({
-    message: "Welcome back , I am Docify",
-  });
+app.get("/", async (req, res) => {
+  try {
+    res.json({
+      message: "Welcome Docify Web Application",
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error("Root error");
+  }
 });
 
 connectDB().then(() => {
