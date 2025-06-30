@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+  googleLogin,
+  home,
   login,
   logout,
   register,
@@ -8,13 +10,9 @@ import {
 
 export const router = Router();
 
-router.get("/", (req, res) => {
-  res.json({
-    message: "Auth routing working successfully",
-  });
-});
-
+router.get("/", home);
 router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/verify", verify);
+router.get("/google", googleLogin);

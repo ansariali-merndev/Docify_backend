@@ -1,3 +1,5 @@
+import axios from "axios";
+import { googleAuth } from "../config/googleapi.js";
 import { checkUser, saveUser } from "../services/authService.js";
 import { verifyToken } from "../utils/jwt.js";
 import {
@@ -5,6 +7,12 @@ import {
   handleError,
   setTokenCookie,
 } from "../utils/util.js";
+
+export const home = (req, res) => {
+  res.json({
+    message: "Docify Auth is working",
+  });
+};
 
 export const register = async (req, res) => {
   const { username, password } = req.body;
@@ -124,5 +132,30 @@ export const verify = async (req, res) => {
     });
   } catch (error) {
     handleError(error, `Auth Verify error : ${error.message}`);
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  const { code } = req.query;
+  try {
+    const googleRes = await googleAuth().getToken(code);
+    googleAuth().setCredentials(googleRes.tokens);
+
+    const userResponse = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${googleRes.tokens.access_token}`,
+        },
+      }
+    );
+
+    console.log(userResponse);
+    res.json({
+      success: true,
+      message: userResponse,
+    });
+  } catch (error) {
+    handleError(error);
   }
 };
